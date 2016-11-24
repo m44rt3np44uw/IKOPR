@@ -17,7 +17,7 @@ public class VierkantenPaneel extends JPanel implements MouseListener {
         // voeg een MouseListener toe aan het panel
         this.addMouseListener(this);
     }
-  
+
 
     // alle methods van  MouseListener; waarom alle?
     public void mousePressed(MouseEvent me) {
@@ -28,6 +28,7 @@ public class VierkantenPaneel extends JPanel implements MouseListener {
         //model en zijn view
         labelAantalVierkanten.setText("Het aantal vierkanten is " + model.getAantalVierkanten());
         this.add(view);
+        this.repaint();
     }
 
     public void mouseClicked(MouseEvent me) {
