@@ -1,0 +1,43 @@
+package Week_4.Opdracht_2;
+
+import javafx.application.Application;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import java.util.ArrayList;
+
+public class HoofdView extends Application
+{
+
+    private ArrayList<Persoon> dePersonenLijst;
+    
+    @Override 
+    public void start (Stage primaryStage)
+    {
+        
+        HBox box = new HBox();
+        box.setSpacing(20);
+        box.setAlignment(Pos.CENTER);
+        
+        Button btPersoon = new Button("personen");
+        Button btRekening = new Button ("rekeningen");
+        
+        box.getChildren().addAll(btPersoon, btRekening);        
+        dePersonenLijst = new ArrayList<Persoon>();
+        
+        ViewRegister register = new ViewRegister();
+        
+        btPersoon.setOnAction (e -> new PersoonView (dePersonenLijst, register)); 
+        btRekening.setOnAction (e -> new RekeningView (dePersonenLijst, register));
+        
+        Scene scene = new Scene (box, 400, 100);
+        primaryStage.setOnCloseRequest(e -> System.out.println ("closing the main window"));
+                                             
+                                              
+        primaryStage.setTitle("HoofdView");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }        
+}
