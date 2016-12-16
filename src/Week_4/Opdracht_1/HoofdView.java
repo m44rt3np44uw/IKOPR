@@ -26,13 +26,13 @@ public class HoofdView extends Application
         
         box.getChildren().addAll(btPersoon, btRekening);        
         dePersonenLijst = new ArrayList<Persoon>();
-        
-        btPersoon.setOnAction (e -> new PersoonView (dePersonenLijst)); 
+
+        btPersoon.setOnAction (e -> new PersoonView (dePersonenLijst));
         btRekening.setOnAction (e -> new RekeningView (dePersonenLijst));
         
         Scene scene = new Scene (box, 400, 100);
         primaryStage.setOnCloseRequest(e -> System.out.println ("closing the main window"));
-                                             
+
                                               
         primaryStage.setTitle("HoofdView");
         primaryStage.setScene(scene);
