@@ -10,8 +10,14 @@ public class Rekening
     public Rekening(String nummer, Persoon persoon)
     {
         this.nummer  = nummer;
-        this.saldo   = 0.0;
         this.persoon = persoon;
+    }
+
+    public Rekening(String nummer, Persoon persoon, double saldo)
+    {
+        this.nummer  = nummer;
+        this.persoon = persoon;
+        this.saldo   = saldo;
     }
 
     public String getNummer() {
@@ -28,6 +34,6 @@ public class Rekening
 
     public void pasSaldoAan(double bedrag)
     {
-        this.saldo = bedrag;
+        this.saldo += bedrag;
     }
 }

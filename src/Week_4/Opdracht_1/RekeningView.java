@@ -31,7 +31,19 @@ public class RekeningView extends Stage
 
     public RekeningView(ArrayList<Persoon> dePersonen) 
     {
-    	// ........... zie ook PersoonView
+    	this.dePersonen = dePersonen;
+
+        nummerField = new TextField();
+        textArea = new TextArea ();
+
+        FlowPane northPane = new FlowPane();
+        FlowPane centerPane = new FlowPane();
+        northPane.setHgap(10);
+        northPane.setVgap(10);
+        centerPane.setHgap(10);
+        centerPane.setVgap(10);
+        northPane.setAlignment(Pos.CENTER);
+        centerPane.setAlignment(Pos.CENTER);
     	
     	rekeningButton = new Button("nieuwe rekening");
     	rekeningButton.setOnAction (e -> handleButton());
@@ -41,11 +53,10 @@ public class RekeningView extends Stage
     	
     	rekeningenList = new ComboBox<String>();
         rekeningenList.setOnAction( e -> handleRekeningenList());
-    	    	
 
-    	
-        // northPane.getChildren().addAll(.........................);
-        // centerPane.getChildren().addAll(...........................); 
+
+        northPane.getChildren().addAll(new Label("nummer"), nummerField, new Label ("alle personen"), personenList, rekeningButton);
+        centerPane.getChildren().addAll(new Label ("alle rekeningen"), rekeningenList, new ScrollPane(textArea));
 
         BorderPane bPane = new BorderPane();
         bPane.setTop (northPane);
@@ -61,11 +72,11 @@ public class RekeningView extends Stage
     private void handleButton()
     {
         if (currentPersoon == null)
-           // .................................
+           System.out.println("Er is geen persoon geselecteerd.");
         else
         {
-           currentRekening = // .................................
-           // .......................................
+           currentRekening = new Rekening(nummerField.getText(), currentPersoon);
+           currentPersoon.voegRekeningToe(currentRekening);
            reportChange();
         }        
         
@@ -73,12 +84,35 @@ public class RekeningView extends Stage
         
     private void handlePersonenList()
     {
-       // zie ook PersoonView          
+       String selected = (String) personenList.getValue();
+
+       for (Persoon persoon: dePersonen)
+       {
+           if(persoon.getBsn().equals(selected))
+           {
+               currentPersoon = persoon;
+               return;
+           }
+       }
     }  
         
     private void handleRekeningenList()
     {
-       // zie ook PersoonView       
+        String selected = (String) rekeningenList.getValue();
+
+        for (Persoon persoon: dePersonen)
+        {
+            for (Rekening rekening: persoon.getRekeningen())
+            {
+
+                if(rekening.getNummer().equals(selected))
+                {
+                    currentRekening = rekening;
+                    refreshTextArea();
+                    return;
+                }
+            }
+        }
     }
     
     public void reportChange()
@@ -92,6 +126,17 @@ public class RekeningView extends Stage
     private void refreshPersonenList()
     {
         // zie ook PersoonView
+        personenList.getItems().clear();
+
+        for (Persoon persoon: dePersonen)
+        {
+            personenList.getItems().add(persoon.getBsn());
+        }
+
+        if(currentPersoon != null)
+        {
+            personenList.setValue(currentPersoon.getBsn());
+        }
             
     }
     
@@ -101,14 +146,37 @@ public class RekeningView extends Stage
         // voeg alle rekeningnummers (van alle personen) 
         // toe aan rekeningenList
         // laat de actuele waarde van rekeningenList het rekening
-        // nummer van currentRekening zijn 
+        // nummer van currentRekening zijn
+        rekeningenList.getItems().clear();
+
+        for (Persoon persoon: dePersonen)
+        {
+            if (persoon.getRekeningen() != null)
+            {
+                for(Rekening rekening: persoon.getRekeningen())
+                {
+                    rekeningenList.getItems().add(rekening.getNummer());
+                }
+            }
+        }
+
+        if (currentRekening != null)
+        {
+            rekeningenList.setValue(currentRekening.getNummer());
+        }
     }  
         
     private void refreshTextArea()
     {
         textArea.setText("");
         // toon op de textArea nummer en saldo van currentRekening
-        // en naam en bsn-nummer van de eigenaar 
+        // en naam en bsn-nummer van de eigenaar
+        if (currentRekening != null)
+        {
+            textArea.appendText(currentRekening.getNummer() + "\t" + currentRekening.getSaldo());
+            textArea.appendText("\n\n Rekeninghouder: \n\n");
+            textArea.appendText(currentRekening.getPersoon().getNaam() + "\t" + currentRekening.getPersoon().getBsn());
+        }
         
     }         
 }

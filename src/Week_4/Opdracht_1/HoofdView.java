@@ -37,5 +37,7 @@ public class HoofdView extends Application
         primaryStage.setTitle("HoofdView");
         primaryStage.setScene(scene);
         primaryStage.show();
-    }        
+    }
+
+    public static void main(String[] args) { launch(args); }
 }
