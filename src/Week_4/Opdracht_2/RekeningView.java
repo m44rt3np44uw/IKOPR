@@ -32,7 +32,37 @@ public class RekeningView extends View
 
     public RekeningView(ArrayList<Persoon> dePersonen, ViewRegister register) 
     {
-    	// .......... 
+        this.dePersonen = dePersonen;
+        this.register   = register;
+
+        nummerField    = new TextField();
+        rekeningButton = new Button("nieuwe rekening");
+        personenList   = new ComboBox<String>();
+        rekeningenList = new ComboBox<String>();
+        textArea       = new TextArea ();
+
+        BorderPane bPane = new BorderPane();
+
+        FlowPane northPane = new FlowPane();
+        FlowPane centerPane = new FlowPane();
+        northPane.setHgap(10);
+        northPane.setVgap(10);
+        centerPane.setHgap(10);
+        centerPane.setVgap(10);
+        northPane.setAlignment(Pos.CENTER);
+        centerPane.setAlignment(Pos.CENTER);
+        rekeningButton.setOnAction (e -> handleButton());
+
+        personenList.setOnAction( e -> handlePersonenList());
+
+        rekeningenList.setOnAction( e -> handleRekeningenList());
+
+
+        northPane.getChildren().addAll(new Label("nummer"), nummerField, new Label ("alle personen"), personenList, rekeningButton);
+        centerPane.getChildren().addAll(new Label ("alle rekeningen"), rekeningenList, new ScrollPane(textArea));
+
+        bPane.setTop (northPane);
+        bPane.setCenter(centerPane);
     	
     	register.add(this);
     	reportChange();
@@ -48,23 +78,44 @@ public class RekeningView extends View
     private void handleButton()
     {
         if (currentPersoon == null)
-           // ..............................
+            System.out.println ("geen persoon geselecteerd");
         else
         {
-           //...........................
-           register.reportChange();
-        }        
-        
+            currentRekening = new Rekening (nummerField.getText(), currentPersoon);
+            currentPersoon.voegRekeningToe(currentRekening);
+            register.reportChange();
+        }
+
     } 
         
     private void handlePersonenList()
     {
-       // ....................           
-    }  
+        String selected = (String) personenList.getValue();
+        for (Persoon persoon: dePersonen)
+        {
+            if (persoon.getBsn().equals(selected))
+            {
+                currentPersoon = persoon;
+                return;
+            }
+        }
+    }
         
     private void handleRekeningenList()
     {
-        // ......................          
+        String selected = (String) rekeningenList.getValue();
+        for (Persoon pers : dePersonen)
+        {
+            for (Rekening rekening: pers.getRekeningen())
+            {
+                if (rekening.getNummer().equals(selected))
+                {
+                    currentRekening = rekening;
+                    refreshTextArea();
+                    return;
+                }
+            }
+        }
     }
     
     public void reportChange()
@@ -77,23 +128,53 @@ public class RekeningView extends View
            
     private void refreshPersonenList()
     {
-        // ..................
-            
+        personenList.getItems().clear();
+
+        for (Persoon persoon: dePersonen)
+        {
+            personenList.getItems().add(persoon.getBsn());
+        }
+
+        if (currentPersoon != null)
+        {
+            personenList.setValue(currentPersoon.getBsn());
+        }
+
     }
     
     private void refreshRekeningenList()
     {
-        // ..........................
-    }  
+        rekeningenList.getItems().clear();
+        for (Persoon persoon : dePersonen)
+        {
+            for (Rekening rekening: persoon.getRekeningen())
+            {
+
+                rekeningenList.getItems().add(rekening.getNummer());
+            }
+        }
+        if (currentRekening != null)
+        {
+            rekeningenList.setValue(currentRekening.getNummer());
+        }
+    }
         
     private void refreshTextArea()
     {
-        // ............................
-        
+        textArea.setText("");
+
+        if (currentRekening != null)
+        {
+            textArea.appendText (currentRekening.getNummer() + "\t" + currentRekening.getSaldo());
+            textArea.appendText ("\n\n rekeninghouder: \n\n");
+            textArea.appendText (currentRekening.getPersoon().getNaam() + "\t" + currentRekening.getPersoon().getBsn());
+        }
     } 
      
     private void handleClose()
     {
-    	// zie PersoonView
+        register.remove(this);
+        System.out.println ("closing a RekeningView");
+        this.close();
     }        
 }
